@@ -3,7 +3,7 @@ import { ArrowUpRight, ArrowDownRight, FileText, CheckCircle, Clock } from 'luci
 
 import { useState, useEffect } from 'react';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 const StatCard = ({ title, value, change, isPositive, icon: Icon, colorClass }: any) => {
   // Use Status Badges rules from Design System
@@ -12,7 +12,7 @@ const StatCard = ({ title, value, change, isPositive, icon: Icon, colorClass }: 
     : "text-error bg-error/10";
 
   return (
-    <div className="bg-surface-container-lowest rounded-2xl p-8 shadow-ambient hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between">
+    <div className="bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-ambient hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between">
       <div className="flex items-start justify-between">
         <div className="space-y-3">
           <p className="text-label-sm text-on-surface-variant">{title}</p>
@@ -60,8 +60,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-12 animate-in fade-in duration-500 pb-12">
       <header className="flex flex-col gap-2">
-        <h1 className="text-display-sm font-bold text-on-surface">Dashboard General</h1>
-        <p className="text-body-md text-on-surface-variant font-medium">Resumen ejecutivo y control de facturas</p>
+        <h1 className="text-2xl md:text-display-sm font-bold text-on-surface">Dashboard General</h1>
+        <p className="text-sm md:text-body-md text-on-surface-variant font-medium">Resumen ejecutivo y control de facturas</p>
       </header>
       
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -91,19 +91,19 @@ const Dashboard = () => {
         />
       </section>
 
-      <section className="bg-surface-container-lowest rounded-2xl shadow-ambient p-8 hover:shadow-lg transition-shadow">
-        <div className="flex items-center justify-between mb-10">
+      <section className="bg-surface-container-lowest rounded-2xl shadow-ambient p-6 md:p-8 hover:shadow-lg transition-shadow">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-10 gap-4">
           <h2 className="text-title-md font-bold text-on-surface">Rendimiento Financiero</h2>
-          <select className="bg-surface-container-low border border-ghost text-on-surface text-sm rounded-lg focus:ring-secondary focus:border-secondary block px-5 py-2.5 font-medium appearance-none cursor-pointer hover:bg-surface-container transition-colors">
+          <select className="w-full sm:w-auto bg-surface-container-low border border-ghost text-on-surface text-sm rounded-lg focus:ring-secondary focus:border-secondary block px-5 py-2.5 font-medium appearance-none cursor-pointer hover:bg-surface-container transition-colors">
             <option>Últimos 7 días</option>
             <option>Último mes</option>
           </select>
         </div>
-        <div className="h-[400px] w-full mt-4">
+        <div className="h-[250px] md:h-[400px] w-full mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={stats.grafico_ventas} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={stats.grafico_ventas} margin={{ top: 10, right: 10, left: -20, bottom: 45 }}>
               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#c4c6cd" opacity={0.3} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#43474c', fontSize: 13, fontWeight: 500 }} dy={20} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#43474c', fontSize: 13, fontWeight: 500 }} dy={10} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#43474c', fontSize: 13, fontWeight: 500 }} dx={-15} tickFormatter={(value) => `S/${value}`} />
               <Tooltip 
                 cursor={{ fill: 'rgba(241, 244, 248, 0.4)' }}

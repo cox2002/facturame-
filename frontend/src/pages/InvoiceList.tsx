@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { useState, useEffect } from 'react';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 // Formateador de moneda
 const formatCurrency = (amount: number, currency: string) => {
@@ -46,12 +46,12 @@ const InvoiceList = () => {
           <h1 className="text-display-sm font-bold text-on-surface">Comprobantes</h1>
           <p className="text-body-md text-on-surface-variant font-medium">Gestiona y consulta el estado de tus emisiones.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center px-4 py-2.5 rounded-lg text-sm font-bold text-on-surface bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+          <button className="flex items-center justify-center w-full sm:w-auto px-4 py-2.5 rounded-lg text-sm font-bold text-on-surface bg-surface-container-low hover:bg-surface-container transition-colors shadow-sm">
             <Download className="w-4 h-4 mr-2" />
             Exportar
           </button>
-          <Link to="/invoice/new" className="flex items-center px-5 py-2.5 rounded-lg text-sm font-bold text-on-primary bg-gradient-to-br from-primary to-primary-container shadow-ambient hover:opacity-90 transition-opacity">
+          <Link to="/invoice/new" className="flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-lg text-sm font-bold text-on-primary bg-gradient-to-br from-primary to-primary-container shadow-ambient hover:opacity-90 transition-opacity">
             <Plus className="w-4 h-4 mr-2" />
             Nueva Factura
           </Link>
@@ -79,7 +79,7 @@ const InvoiceList = () => {
 
       {/* Data Table */}
       <div className="bg-transparent">
-        <div className="grid grid-cols-12 gap-4 px-6 py-4 text-label-sm text-on-surface-variant border-b border-ghost mb-4">
+        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 text-label-sm text-on-surface-variant border-b border-ghost mb-4">
           <div className="col-span-3">Nº COMPROBANTE</div>
           <div className="col-span-4">CLIENTE</div>
           <div className="col-span-2">FECHA</div>
@@ -95,24 +95,29 @@ const InvoiceList = () => {
           ) : invoices.map((invoice) => (
             <div 
               key={invoice.id} 
-              className="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest rounded-xl px-6 py-5 shadow-ambient hover:bg-surface-container-high hover:shadow-lg transition-all duration-300 border border-transparent hover:border-ghost/50"
+              className="flex flex-col md:grid md:grid-cols-12 gap-4 items-start md:items-center bg-surface-container-lowest rounded-xl px-6 py-5 shadow-ambient hover:bg-surface-container-high hover:shadow-lg transition-all duration-300 border border-transparent hover:border-ghost/50"
             >
-              <div className="col-span-3 flex items-center gap-3">
+              <div className="col-span-3 flex items-center gap-3 w-full">
                 <div className="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary border border-ghost">
                   <FileText className="w-5 h-5" />
                 </div>
-                <span className="font-bold text-on-surface">{invoice.serie}-{invoice.numero}</span>
+                <div className="flex flex-col md:flex-row md:items-center gap-1">
+                   <span className="font-bold text-on-surface">{invoice.serie}-{invoice.numero}</span>
+                   <span className="md:hidden text-xs text-on-surface-variant">{invoice.fecha_emision}</span>
+                </div>
               </div>
-              <div className="col-span-4 font-medium text-body-md text-on-surface-variant truncate">
+              <div className="col-span-4 font-medium text-body-md text-on-surface-variant truncate w-full">
+                <span className="md:hidden text-xs font-bold text-gray-400 block mb-0.5 uppercase">Cliente</span>
                 {invoice.razon_social}
               </div>
-              <div className="col-span-2 text-body-md text-on-surface-variant">
+              <div className="hidden md:block col-span-2 text-body-md text-on-surface-variant">
                 {invoice.fecha_emision}
               </div>
-              <div className="col-span-2 text-right font-bold text-on-surface">
+              <div className="col-span-2 md:text-right font-bold text-on-surface w-full flex md:block justify-between items-center">
+                <span className="md:hidden text-xs font-bold text-gray-400 uppercase">Total</span>
                 {formatCurrency(invoice.total_venta, invoice.moneda)}
               </div>
-              <div className="col-span-1 flex justify-center">
+              <div className="col-span-1 flex md:justify-center w-full mt-2 md:mt-0 pt-3 md:pt-0 border-t border-ghost md:border-none">
                 <StatusBadge status={invoice.estado_sunat} />
               </div>
             </div>

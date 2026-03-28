@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, User, Edit2, Trash2, X, MapPin, Mail, Phone } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 const EditClientModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
   if (!isOpen) return null;
@@ -19,8 +19,8 @@ const EditClientModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
         className="relative w-full max-w-2xl bg-surface-container-lowest rounded-2xl shadow-ambient border border-ghost overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-8 py-6 border-b border-ghost bg-surface/50">
-          <h2 className="text-title-md font-bold text-on-surface">Editar Cliente</h2>
+        <div className="flex items-center justify-between px-6 md:px-8 py-4 md:py-6 border-b border-ghost bg-surface/50">
+          <h2 className="text-lg md:text-title-md font-bold text-on-surface">Editar Cliente</h2>
           <button 
             onClick={onClose}
             className="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors"
@@ -29,7 +29,7 @@ const EditClientModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
           </button>
         </div>
 
-        <div className="p-8 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
+        <div className="p-6 md:p-8 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-label-sm font-bold text-on-surface-variant uppercase">RUC / DNI</label>
@@ -107,10 +107,10 @@ const Clients = () => {
           <h1 className="text-display-sm font-bold text-on-surface">Gestión de Clientes</h1>
           <p className="text-body-md text-on-surface-variant font-medium">Administra tu cartera de clientes y direcciones.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center px-5 py-2.5 rounded-lg text-sm font-bold text-on-primary bg-gradient-to-br from-primary to-primary-container shadow-ambient hover:opacity-90 transition-opacity"
+            className="flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-lg text-sm font-bold text-on-primary bg-gradient-to-br from-primary to-primary-container shadow-ambient hover:opacity-90 transition-opacity"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Cliente
@@ -132,7 +132,7 @@ const Clients = () => {
 
       {/* Data Table */}
       <div className="bg-transparent">
-        <div className="grid grid-cols-12 gap-4 px-6 py-4 text-label-sm text-on-surface-variant border-b border-ghost mb-4">
+        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 text-label-sm text-on-surface-variant border-b border-ghost mb-4">
           <div className="col-span-4">RAZÓN SOCIAL / RUC</div>
           <div className="col-span-3">CONTACTO</div>
           <div className="col-span-3">CORREO</div>
@@ -148,29 +148,31 @@ const Clients = () => {
           ) : clients.map((client) => (
             <div 
               key={client.id} 
-              className="grid grid-cols-12 gap-4 items-center bg-surface-container-lowest rounded-xl px-6 py-4 shadow-ambient hover:bg-surface-container-high transition-all duration-300 border border-transparent hover:border-ghost/50"
+              className="flex flex-col md:grid md:grid-cols-12 gap-4 items-start md:items-center bg-surface-container-lowest rounded-xl px-6 py-5 shadow-ambient hover:bg-surface-container-high transition-all duration-300 border border-transparent hover:border-ghost/50"
             >
-              <div className="col-span-4 flex items-center gap-4">
+              <div className="col-span-4 flex items-center gap-4 w-full">
                 <div className="w-10 h-10 rounded-full bg-surface text-primary border border-ghost flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-bold text-on-surface text-sm truncate">{client.name}</p>
-                  <p className="text-body-md text-on-surface-variant mt-0.5">RUC: {client.ruc}</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">RUC: {client.ruc}</p>
                 </div>
               </div>
-              <div className="col-span-3 text-body-md text-on-surface-variant font-medium">
+              <div className="col-span-3 text-sm text-on-surface-variant font-medium w-full flex md:block justify-between items-center">
+                <span className="md:hidden text-xs font-bold text-gray-400 uppercase">Contacto</span>
                 {client.contact}
               </div>
-              <div className="col-span-3 text-body-md text-primary font-medium truncate">
+              <div className="col-span-3 text-sm text-primary font-medium truncate w-full flex md:block justify-between items-center">
+                <span className="md:hidden text-xs font-bold text-gray-400 uppercase">Correo</span>
                 {client.email}
               </div>
-              <div className="col-span-1 flex justify-center">
+              <div className="col-span-1 flex md:justify-center w-full md:w-auto">
                 <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${client.status === 'Activo' ? 'bg-emerald-700/10 text-emerald-700' : 'bg-surface-container bg-opacity-50 text-on-surface-variant'}`}>
                   {client.status}
                 </span>
               </div>
-              <div className="col-span-1 flex justify-end gap-2">
+              <div className="col-span-1 flex justify-end gap-2 w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t border-ghost md:border-none">
                 <button 
                   onClick={() => setIsModalOpen(true)}
                   className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors"

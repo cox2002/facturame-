@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, Users, Box, LogOut, Bell, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Users, Box, LogOut, Bell, User as UserIcon, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const DashboardLayout = () => {
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   
   // Custom Hook for clicking outside could go here for production, but simple toggle serves demo.
@@ -66,13 +67,81 @@ const DashboardLayout = () => {
         </div>
       </aside>
 
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        ></div>
+      )}
+
+      {/* Mobile Drawer */}
+      <aside 
+        className={`fixed top-0 left-0 bottom-0 w-64 bg-surface-container-lowest z-50 shadow-ambient transform transition-transform duration-300 md:hidden flex flex-col
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <div className="h-20 flex items-center justify-between px-6 border-b border-ghost">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="facturame+" className="w-10 h-10 object-contain rounded-xl" />
+            <span className="font-bold text-lg text-primary tracking-tight">facturame+</span>
+          </div>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-on-surface-variant hover:text-error bg-surface-container rounded-full">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href));
+            const Icon = item.icon;
+            
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`
+                  group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300
+                  ${isActive 
+                    ? 'bg-surface-container-high text-primary shadow-sm' 
+                    : 'text-on-surface hover:bg-surface-container hover:text-primary'
+                  }
+                `}
+              >
+                <Icon className={`mr-3 flex-shrink-0 h-5 w-5 ${isActive ? 'text-secondary' : 'text-on-surface-variant group-hover:text-primary'}`} />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+        
+        <div className="p-4 border-t border-ghost">
+          <button 
+            onClick={logout}
+            className="flex items-center w-full px-4 py-3 text-sm font-medium text-on-surface-variant rounded-lg hover:bg-error-container hover:text-error transition-colors group"
+          >
+            <LogOut className="mr-3 h-5 w-5 text-on-surface-variant group-hover:text-error" />
+            Cerrar Sesión
+          </button>
+        </div>
+      </aside>
+
       {/* Main Container */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-surface">
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-surface relative">
         {/* Header - The Glass & Gradient Rule */}
-        <header className="h-20 flex-shrink-0 flex items-center justify-between px-8 glass-panel sticky top-0 z-10 transition-all border-b border-ghost shadow-sm">
-          <div className="flex items-center md:hidden gap-2">
-            <img src="/logo.png" alt="facturame+" className="w-8 h-8 object-contain rounded-lg" />
-            <span className="font-bold text-lg text-primary">facturame+</span>
+        <header className="h-20 flex-shrink-0 flex items-center justify-between px-4 md:px-8 glass-panel sticky top-0 z-10 transition-all border-b border-ghost shadow-sm">
+          <div className="flex items-center md:hidden gap-3">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 -ml-2 text-on-surface hover:bg-surface-container rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="facturame+" className="w-8 h-8 object-contain rounded-lg" />
+              <span className="font-bold text-lg text-primary hidden sm:inline-block">facturame+</span>
+            </div>
           </div>
           
           <div className="flex-1 flex justify-end items-center gap-6 relative">
@@ -159,7 +228,7 @@ const DashboardLayout = () => {
         </header>
 
         {/* Dynamic Outlet */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative">
           <div className="max-w-[1400px] mx-auto h-full space-y-8">
              <Outlet />
           </div>

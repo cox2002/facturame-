@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Plus, Trash2, Printer, CheckCircle2, Lock } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
 type InvoiceLine = {
   description: string;
   quantity: number;
@@ -88,7 +90,7 @@ const NewInvoice = () => {
         }))
       };
 
-      const response = await fetch('http://localhost:8000/api/v1/facturas/emitir', {
+      const response = await fetch(`${API_URL}/facturas/emitir`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -121,21 +123,21 @@ const NewInvoice = () => {
       alert(`✅ ${result.mensaje}\n\nID Base de datos: ${result.factura_id}\nEstado SUNAT: ${result.estado}`);
     } catch (error: any) {
       console.error(error);
-      alert(`❌ Error al emitir:\n${error.message}\nVerifica conexión al servidor en localhost:8000.`);
+      alert(`❌ Error al emitir:\n${error.message}\nVerifica conexión al servidor.`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20 md:pb-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-secondary">Emisión de Comprobante</h1>
-          <p className="text-gray-500 font-medium mt-1">Ingreso ultra-rápido optimizado (POS)</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-secondary">Emisión de Comprobante</h1>
+          <p className="text-sm md:text-gray-500 font-medium mt-1">Ingreso ultra-rápido optimizado (POS)</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-xl hover:bg-gray-50 font-medium transition-colors shadow-sm">
+          <button className="flex-1 sm:flex-none justify-center flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-xl hover:bg-gray-50 font-medium transition-colors shadow-sm">
             <Printer className="w-5 h-5 mr-2" />
             Borrador
           </button>
@@ -145,23 +147,23 @@ const NewInvoice = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main form */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-surface rounded-2xl border border-borderC p-6 shadow-sm">
+          <div className="bg-surface rounded-2xl border border-borderC p-5 md:p-6 shadow-sm">
             <h2 className="text-lg font-bold text-secondary mb-4 border-b border-borderC pb-3">Datos del Cliente</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-              <div className="col-span-2 lg:col-span-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+              <div className="col-span-1">
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Emisión</label>
                 <select {...register("voucherType")} className="w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border-p p-3 transition-shadow font-medium">
                   <option value="01">Factura</option>
                   <option value="03">Boleta</option>
                 </select>
               </div>
-              <div className="col-span-2 lg:col-span-1">
+              <div className="col-span-1">
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Serie (Editable)</label>
                 <div className="relative">
                   <input {...register("serie")} className="w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-3 uppercase font-bold text-secondary tracking-widest text-center pr-8" />
                 </div>
               </div>
-              <div className="col-span-2 lg:col-span-2">
+              <div className="col-span-1 sm:col-span-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center justify-between">
                   Correlativo
                   <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 rounded font-bold uppercase tracking-wider flex items-center"><Lock className="w-3 h-3 inline mr-1"/>Seguro</span>
@@ -171,26 +173,26 @@ const NewInvoice = () => {
                 </div>
               </div>
 
-              <div className="col-span-2">
+              <div className="col-span-1 sm:col-span-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5 whitespace-nowrap">
-                  Documento Identidad <span className="text-primary font-bold">({watchVoucherType === '01' ? 'RUC - 11 dígitos' : 'DNI/CE - 8 dígitos'})</span> <span className="text-red-500">*</span>
+                  Documento Identidad <span className="text-primary font-bold">({watchVoucherType === '01' ? 'RUC' : 'DNI'})</span> <span className="text-red-500">*</span>
                 </label>
                 <input {...register("clientDocument")} placeholder={watchVoucherType === '01' ? 'Ej. 20123456789' : 'Ej. 76591234'} className="w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 ring-blue-500/20 p-3 font-mono font-medium transition-all" autoFocus />
               </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Razón Social / Nombres Comerciales</label>
-                <input {...register("clientName")} placeholder="Ingresa los nombres del cliente o empresa..." className="w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 font-medium text-secondary" />
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Razón Social / Cliente</label>
+                <input {...register("clientName")} placeholder="Ingresa los nombres..." className="w-full rounded-xl border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 font-medium text-secondary" />
               </div>
             </div>
           </div>
 
-          <div className="bg-surface rounded-2xl border border-borderC p-6 shadow-sm">
+          <div className="bg-surface rounded-2xl border border-borderC p-5 md:p-6 shadow-sm">
             <div className="flex justify-between items-center mb-4 border-b border-borderC pb-3">
               <h2 className="text-lg font-bold text-secondary">Items (Detalle de Venta)</h2>
             </div>
             
-            <div className="space-y-3">
-              <div className="grid grid-cols-12 gap-3 text-xs font-bold text-gray-400 uppercase tracking-widest px-1">
+            <div className="space-y-4 md:space-y-3">
+              <div className="hidden md:grid grid-cols-12 gap-3 text-xs font-bold text-gray-400 uppercase tracking-widest px-1">
                 <div className="col-span-2">Cant/Und</div>
                 <div className="col-span-4">Descripción</div>
                 <div className="col-span-2">P.U.</div>
@@ -199,35 +201,40 @@ const NewInvoice = () => {
               </div>
 
               {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-12 gap-3 items-center group">
-                  <div className="col-span-2 relative">
-                     <span className="absolute right-3 top-3 text-xs text-gray-400 font-bold pointer-events-none">NIU</span>
+                <div key={field.id} className="flex flex-col md:grid md:grid-cols-12 gap-3 md:items-center group border-b md:border-none border-gray-100 pb-4 md:pb-0">
+                  <div className="md:col-span-2 relative">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase mb-1">Cant/Und</label>
+                    <span className="absolute right-3 top-3 md:top-3 text-xs text-gray-400 font-bold pointer-events-none mt-6 md:mt-0">NIU</span>
                     <input type="number" step="0.01" {...register(`lines.${index}.quantity`)} className="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 font-bold pl-3 pr-10 text-secondary" />
                   </div>
-                  <div className="col-span-4">
+                  <div className="md:col-span-4">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase mb-1">Descripción</label>
                     <input {...register(`lines.${index}.description`)} placeholder="Producto ej. Laptop..." className="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 font-medium" />
                   </div>
-                  <div className="col-span-2">
+                  <div className="md:col-span-2">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase mb-1">Precio Unitario</label>
                     <input type="number" step="0.01" {...register(`lines.${index}.unitPrice`)} className="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 font-mono text-blue-700 font-bold bg-blue-50/50" />
                   </div>
-                  <div className="col-span-3">
+                  <div className="md:col-span-3">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase mb-1">Afectación IGV</label>
                     <select {...register(`lines.${index}.igvType`)} className="w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2.5 text-sm font-medium text-gray-700 bg-gray-50 cursor-pointer">
                       <option value="GRAVADO">Gravado (18%)</option>
                       <option value="EXONERADO">Exonerado (0%)</option>
                       <option value="INAFECTO">Inafecto (0%)</option>
                     </select>
                   </div>
-                  <div className="col-span-1 flex justify-center">
-                    <button type="button" onClick={() => remove(index)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+                  <div className="md:col-span-1 flex justify-end md:justify-center">
+                    <button type="button" onClick={() => remove(index)} className="flex items-center gap-2 md:block p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all md:opacity-0 md:group-hover:opacity-100 focus:opacity-100">
                       <Trash2 className="w-5 h-5" />
+                      <span className="md:hidden text-xs font-bold uppercase">Eliminar Item</span>
                     </button>
                   </div>
                 </div>
               ))}
             </div>
 
-            <button type="button" onClick={() => append({ description: '', quantity: 1, unitPrice: 0, igvType: 'GRAVADO' })} className="mt-6 flex items-center text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl transition-colors">
-              <Plus className="w-4 h-4 mr-1.5 stroke-[3px]" /> F5 - Añadir Item
+            <button type="button" onClick={() => append({ description: '', quantity: 1, unitPrice: 0, igvType: 'GRAVADO' })} className="w-full md:w-auto mt-6 flex justify-center items-center text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-6 py-3 rounded-xl transition-colors">
+              <Plus className="w-4 h-4 mr-1.5 stroke-[3px]" /> Añadir Item
             </button>
           </div>
         </div>
