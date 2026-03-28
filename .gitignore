@@ -1,0 +1,30 @@
+# Entornos virtuales Python
+backend/venv/
+backend/env/
+backend/ENV/
+backend/.venv/
+
+# Python dependencias y cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.pytest_cache/
+
+# Base de datos SQLite o variables locales
+backend/*.sqlite
+backend/*.db
+backend/.env
+
+# Node / Javascript
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+.npm/
+
+# SO y varios
+.DS_Store
+Thumbs.db

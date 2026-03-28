@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #162839;
+  --color-primary-container: #2c3e50;
+  --color-secondary: #006397;
+  --color-background: #f7fafe;
+  --color-surface: #f7fafe;
+  --color-surface-container: #ebeef2;
+  --color-surface-container-low: #f1f4f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #181c1f;
+  --color-on-surface-variant: #43474c;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-outline-variant: #c4c6cd;
+  
+  --font-sans: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans antialiased m-0 p-0;
+  }
+}
+
+@layer utilities {
+  .text-display-sm {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+  .text-title-md {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    letter-spacing: -0.02em;
+  }
+  .text-body-md {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .text-label-sm {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .shadow-ambient {
+    box-shadow: 0 12px 32px rgba(22, 40, 57, 0.06);
+  }
+  .border-ghost {
+    border: 1px solid rgba(196, 198, 205, 0.15);
+  }
+  .glass-panel {
+    background-color: rgba(241, 244, 248, 0.8);
+    backdrop-filter: blur(12px);
+  }
+}
