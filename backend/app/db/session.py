@@ -8,8 +8,13 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "sqlite:///./sunat_db.sqlite"
-    # "postgresql+psycopg2://postgres:postgres@localhost:5432/sunat_db"
 )
+
+# Corrección de dialecto para Supabase/Render (PostgreSQL)
+if DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://") and not "psycopg2" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
 
 # SQLite Configuration (converts automatically to PostgreSQL when DATABASE_URL changes)
 is_sqlite = DATABASE_URL.startswith("sqlite")
